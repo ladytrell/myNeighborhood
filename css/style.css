@@ -1,0 +1,18 @@
+html, body{
+    box-sizing: border-box;
+    font-family: 'Source Sans Pro', sans-serif;
+    margin: 0; 
+    height: 100%;
+    #font-weight: bold;
+}
+
+
+#map {
+    height: 100%;
+}
+
+.container {
+  #background-color: #dbe2e8;
+  padding: 0px;
+  height: 100%;
+}
