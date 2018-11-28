@@ -1,3 +1,4 @@
+
 var initialLocations = [
     {
         position: {lat: 35.9625102, lng: -78.90066589999999},
@@ -31,33 +32,25 @@ var initialLocations = [
     }
 ]
 
-var ViewModel = function(){
+
+var map;
+
+function ViewModel(){
     
     var self = this;  //the instance or pointer of the ViewModel
     
-    this.locationList = ko.observableArray([]);
+    self.locationList = ko.observableArray();
     
     initialLocations.forEach(function(locationItem){
         self.locationList.push( locationItem );
     });
-    
-    this.markers = [];    
-
 }
-
+var viewModel = new ViewModel();
 ko.applyBindings(new ViewModel());
 
-
-var map;
 // Initialize the map
 function initMap() {
     var self = this;  //the instance or pointer of map
-    
-    locationList = [];
-    
-    initialLocations.forEach(function(locationItem){
-        locationList.push( locationItem );
-    });
     
     markers = []; 
     // Constructor creates a new map - Centered at Durham, NC.
@@ -69,23 +62,23 @@ function initMap() {
     });
     
     // Projectcode3windowshoppingpart1
-
-    // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < locationList.length; i++) {
-      // Get the position from the location array.
-      var position = locationList[i].position;
-      var title = locationList[i].title;
-      // Create a marker per location, and put into markers array.
-      var marker = new google.maps.Marker({
-        map: map,
-        position: position,
-        title: title,
-        animation: google.maps.Animation.DROP,
-        id: i
-      });
-      // Push the marker to our array of markers.
-      markers.push(marker);
-      // Create an onclick event to open an infowindow at each marker.
-    }
+    // The following group uses the locationList array to create an array of markers on initialize.
     
+    for (var i = 0; i < viewModel.locationList().length; i++) {
+        // Get the position from the location array.
+        var position = viewModel.locationList()[i].position;
+        var title = viewModel.locationList()[i].title;
+        // Create a marker per location, and put into markers array.
+        var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            id: i
+        });
+        // Push the marker to our array of markers.
+        markers.push(marker);
+        // Create an onclick event to open an infowindow at each marker.
+    }
 }  
+
