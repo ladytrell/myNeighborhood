@@ -5,8 +5,12 @@
 </head>
   <body>
     <div class="container flex-box">
-        <div class="location-panel">
+        <div class="location-panel" >
             <h3>Durham Locations</h3>
+            <div>Filter</div>
+            <ul data-bind ="foreach: viewModel.locationList()">
+                <li data-bind ="text: title"></li>
+            </ul>
         </div>
         <div id="map"></div>
     </div>   
