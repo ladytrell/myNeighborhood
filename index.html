@@ -9,7 +9,7 @@
             <h3>Durham Locations</h3>
             <div>Filter</div>
             <ul data-bind ="foreach: viewModel.locationList()">
-                <li data-bind ="text: title"></li>
+                <li data-bind ="text: title, click: $parent.showInfoWindow"></li>
             </ul>
         </div>
         <div id="map"></div>
