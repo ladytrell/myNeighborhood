@@ -7,7 +7,10 @@
     <div class="container flex-box">
         <div class="location-panel" >
             <h3>Durham Locations</h3>
-            <div>Filter</div>
+            <form data-bind ="submit: viewModel.clickCategory">  
+                <select data-bind ="options: viewModel.filterList, value: viewModel.selectedCategory"></select>                
+                <button type="submit">Filter</button>
+            </form>
             <ul data-bind ="foreach: viewModel.locationList()">
                 <li data-bind ="text: title, click: $parent.showInfoWindow"></li>
             </ul>

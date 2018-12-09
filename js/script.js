@@ -1,4 +1,5 @@
 
+var maxLocations = 19;
 var initialLocations = [
     {
         position: {lat: 35.9625102, lng: -78.90066589999999},
@@ -37,21 +38,38 @@ var initialLocations = [
     }
 ]
 
-/*
-var map;
-var markers = [];
-var largeInfowindow;
-var markerId = 0; */
-    
+var Location = function(data){
+    this.title = ko.observable(data.title);
+    this.position = data.position;
+    this.address = ko.observable(data.address);
+    this.place_id = ko.observable(data.place_id);
+    this.markerId = ko.observable(data.markerId);
+};
+
 function ViewModel(){
     
     var self = this;  //the instance or pointer of the ViewModel
     
+    self.filterList = ['Default','Park', 'Museum', 'School', 'Hospital'];
+    
+    self.selectedCategory = ko.observable('Default');
+    
     self.locationList = ko.observableArray();
     
+    /*
     initialLocations.forEach(function(locationItem){
         self.locationList.push( locationItem );
-    });
+    });*/
+ 
+    this.setLocationList = function(locations){
+        var i = 0
+        locations.forEach(function(locationItem){
+        //console.log('setLocationList title: ' + locationItem.title);
+            self.locationList.push(new Location(locationItem));
+        });
+    }; 
+    
+    this.setLocationList(initialLocations);
     
     self.setLocationMarkerID = function( locationItem,locationId){
         this.locationList()[locationItem].markerId = locationId;
@@ -60,13 +78,13 @@ function ViewModel(){
     // Function to link locationList to the markers.  Try matching the positions
     //this inside the function is the locationList{} due to the with binding in the html
     this.showInfoWindow = function(){
-        console.log(this.title);
-        console.log(this.position);
-        console.log(this.markerId);
+        //console.log(this.title());
+        //console.log(this.position);
+        //console.log(this.markerId);
         for (var i = 0; i < mapView.markers.length; i++) {
-        console.log(mapView.markers[i].title);
-        console.log(mapView.markers[i].position);
-        console.log(mapView.markers[i].id);
+        //console.log(mapView.markers[i].title);
+        console.log('showInfoWindow: ' + mapView.markers[i].position);
+        console.log('showInfoWindow: ' + mapView.markers[i].id);
             if(this.markerId == mapView.markers[i].id){
             //if(this.position.lat == markers[i].position.lat && this.position.lng == markers[i].position.lng){
                 mapView.populateInfoWindow(mapView.markers[i], mapView.largeInfowindow);
@@ -74,12 +92,29 @@ function ViewModel(){
             }
         }
     };
-    /*
-    // Udacity Project_Code_10_DisplayRoutesDirectionsService.html
-    document.getElementById('search-within-time').addEventListener('click', function() {
-        searchWithinTime();
-    });
-    */
+    
+    this.empytList = function(){
+        self.locationList().forEach(function(item){
+            self.locationList.removeAll();
+        });
+    };
+    
+    this.clickCategory = function(){
+        //self.empytList();
+        self.locationList.removeAll();
+        mapView.hideMarkers();
+        //console.log('clickCategory list length: ' + self.locationList.length);
+        console.log('clickCategory self.selectedCategory(): ' + self.selectedCategory());
+        if(self.selectedCategory() == 'Default'){
+            self.setLocationList(initialLocations);
+            mapView.createMarkers();
+        }
+        else{
+           //self.setLocationList(mapView.getLocations(self.selectedCategory()));
+           mapView.getLocations(self.selectedCategory());
+        }
+    };
+    
 }
 var viewModel = new ViewModel();
 ko.applyBindings(new ViewModel());
@@ -91,13 +126,14 @@ function MapView(){
     this.markers = [];
     this.largeInfowindow;
     this.markerId = 0;
+    this.mapLocation = {lat: 35.9940329, lng: -78.898619};
 
     // Initialize the map
     this.initMap = function() {
      
         // Constructor creates a new map - Centered at Durham, NC.
         self.map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 35.9940329, lng: -78.898619},
+          center: self.mapLocation,
           zoom: 13,
           //styles: styles,
           mapTypeControl: false
@@ -111,12 +147,14 @@ function MapView(){
         // The following group uses the locationList array to create an array of markers on initialize.
         
         //var largeInfowindow = new google.maps.InfoWindow();
-        this.largeInfowindow = new google.maps.InfoWindow();
+        self.largeInfowindow = new google.maps.InfoWindow();
+            
+        console.log("createMarkers viewModel.locationList: " + viewModel.locationList().length);
             
         for (var i = 0; i < viewModel.locationList().length; i++) {
             // Get the position from the location array.
             var position = viewModel.locationList()[i].position;
-            var title = viewModel.locationList()[i].title;
+            var title = viewModel.locationList()[i].title();
             // Create a marker per location, and put into markers array.
             var marker = new google.maps.Marker({
                 map: self.map,
@@ -127,15 +165,25 @@ function MapView(){
             });
             viewModel.setLocationMarkerID(i,self.markerId);
             self.markerId++;
+            marker.setMap(self.map);
             // Push the marker to our array of markers.
-            this.markers.push(marker);
+            self.markers.push(marker);
             // Create an onclick event to open an infowindow at each marker.
             marker.addListener('click', function() {
-                populateInfoWindow(this, largeInfowindow);
+                self.populateInfoWindow(this, self.largeInfowindow);
             });
         }
     };
 
+    // This function will loop through the listings and hide them all. Clear markers array
+    // Udacity Project_Code_13_DevilInTheDetailsPlacesDetails.html
+    this.hideMarkers = function () {
+        for (var i = 0; i < self.markers.length; i++) {
+          self.markers[i].setMap(null);
+        }
+        self.markers.splice(0,self.markers.length);
+     };
+      
     // Udacity Projectcode3windowshoppingpart1
     // This function populates the infowindow when the marker is clicked. We'll only allow
     // one infowindow which will open at the marker that is clicked, and populate based
@@ -153,46 +201,46 @@ function MapView(){
         }
     };
 
-    /*
-    // Need function for processing infor from the dropdown menu
-          // This function allows the user to input a desired travel time, in
-          // minutes, and a travel mode, and a location - and only show the listings
-          // that are within that travel time (via that travel mode) of the location
-          function searchWithinTime() {
-            // Initialize the distance matrix service.
-            var distanceMatrixService = new google.maps.DistanceMatrixService;
-            var address = document.getElementById('search-within-time-text').value;
-            // Check to make sure the place entered isn't blank.
-            if (address == '') {
-              window.alert('You must enter an address.');
-            } else {
-              hideListings();
-              // Use the distance matrix service to calculate the duration of the
-              // routes between all our markers, and the destination address entered
-              // by the user. Then put all the origins into an origin matrix.
-              var origins = [];
-              for (var i = 0; i < markers.length; i++) {
-                origins[i] = markers[i].position;
-              }
-              var destination = address;
-              var mode = document.getElementById('mode').value;
-              // Now that both the origins and destination are defined, get all the
-              // info for the distances between them.
-              distanceMatrixService.getDistanceMatrix({
-                origins: origins,
-                destinations: [destination],
-                travelMode: google.maps.TravelMode[mode],
-                unitSystem: google.maps.UnitSystem.IMPERIAL,
-              }, function(response, status) {
-                if (status !== google.maps.DistanceMatrixStatus.OK) {
-                  window.alert('Error was: ' + status);
-                } else {
-                  displayMarkersWithinTime(response);
-                }
-              });
+    this.getLocations = function(category){
+        console.log("getLocation: " + category);
+        
+        var request = {
+            location: self.mapLocation,
+            type: [category.toLowerCase()],
+            radius:  11000,
+            fields: ['name', 'formatted_address', 'place_id', 'geometry'],
+        };
+        service = new google.maps.places.PlacesService(self.map);
+        service.nearbySearch(request, self.createLocationList);
+    };
+
+    this.createLocationList = function(results, status){ 
+        console.log("createLocationList: " + status);         
+        var newLocations = [];
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length && i < maxLocations; i++) {
+                var place = {
+                    title: '',
+                    address: '',
+                    place_id: '',
+                    position: '',
+                    markerId: null
+                }                 
+                if(results[i].name){ place.title = results[i].name;}
+                if(results[i].formatted_address){ place.address = results[i].formatted_address;}
+                else if(results[i].vicinity) { place.address = results[i].vicinity;}
+                else{;}
+                if(results[i].place_id){ place.place_id = results[i].place_id;}
+                if(results[i].geometry.location){ place.position = results[i].geometry.location;}
+                
+                //console.log("place title: " + place.title);  
+                //console.log("place adress: " + place.address);
+                newLocations.push(place);
             }
-          }
-    */
+        }
+        viewModel.setLocationList(newLocations);
+        self.createMarkers();
+    };
 }
 
 var mapView = new MapView();
