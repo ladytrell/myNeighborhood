@@ -1,0 +1,39 @@
+
+@media screen and (max-width: 550px) {
+	body, .container {
+		min-width: 300px;
+	}
+	
+	.location-panel {
+		min-width: 250px;
+		display: inline-block;
+	}
+
+	.form{
+		margin-left: 0px;
+	}
+		
+	#map {
+		width: 100%;
+		max-width: 100%;
+		display: inline-block;
+	}
+/*
+       * Off-canvas layout styles.
+       */
+
+      /* Since we're mobile-first, by default, the drawer is hidden. */
+      nav.close {
+        position: absolute;
+        /* This trasform moves the drawer off canvas. */
+        -webkit-transform: translate(-250px, 0);
+        transform: translate(-250px, 0);
+        /* Optionally, we animate the drawer. */
+        transition: transform 0.3s ease;
+      }
+      nav {
+        -webkit-transform: translate(0, 0);
+        transform: translate(0, 0);
+      }
+
+}
