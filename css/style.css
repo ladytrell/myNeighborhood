@@ -1,9 +1,10 @@
 html, body{
     box-sizing: border-box;
     font-family: 'Arial', sans-serif;
-    margin: 0; 
+    margin: 0; 	
+	width: 100%;
     height: 100%;
-    #font-weight: bold;
+    background-color: black;
 }
 
 ul,
@@ -17,31 +18,47 @@ h5,
 h6 {
   padding: 10px;
   margin: 0;
+  color: white;
+}
+
+ul{
+	list-style-type: none;
+}
+
+h3 {
+	color: purple;
 }
 
 .location-panel {
     width: 250px;
     height: 100%;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    overflow-x: hidden;
+	display: inline-block;
+	border-color: red;
+	border-width: 1px;
+	border-style: solid;
+	margin-left: auto;
 }
 
 #map {
     height: 100%;
     padding: 0px;
-    margin-left: 250px;
-    width: 100%;
+    max-width: calc(900px - 255px);
+	width: calc(100% - 255px);
+	display: inline-block;
+	border-color: red;
+	border-width: 1px;
+	border-style: solid;
+	margin-right: auto;
 }
 
 .container {
-  #background-color: #dbe2e8;
-  padding: 0px;
-  height: 100%;
+	padding: 0px;	
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex: wrap;
 }
-
+	
 .inline-block {
   display: inline-block;
 }

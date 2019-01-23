@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html> 
 <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
   <body>
-    <div class="container flex-box">
-        <div class="location-panel" >
+    <div class="container">
+        <nav class="location-panel" >
             <h3>Durham Locations</h3>
-            <form data-bind ="submit: viewModel.clickCategory">  
+            <form class="form" data-bind ="submit: viewModel.clickCategory">  
                 <select data-bind ="options: viewModel.filterListKey, value: viewModel.selectedCategory"></select>                
                 <button type="submit">Filter</button>
             </form>
             <ul data-bind ="foreach: viewModel.locationList()">
                 <li data-bind ="text: title, click: $parent.showInfoWindow"></li>
             </ul>
-        </div>
+        </nav>
         <div id="map"></div>
     </div>   
 

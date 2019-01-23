@@ -71,22 +71,42 @@ function ViewModel(){
 		Hospital: '4bf58dd8d48988d196941735'
 	};
     
-	self.filterListKey = Object.keys(self.filterList);
-	
+	self.filterListKey = Object.keys(self.filterList);	
     self.selectedCategory = ko.observable('Default');
-    
     self.locationList = ko.observableArray();
-    
-    /*
-    initialLocations.forEach(function(locationItem){
-        self.locationList.push( locationItem );
-    });*/
+
  
+	this.getPhoto = function(index){
+		
+		var size = '100x100';
+		var id = self.locationList()[index].foursquare_id();
+		// https://api.foursquare.com/v2/venues/4c61ebbce1349521fbe9aaf0/photos?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219
+		// response’s prefix + size + suffix. Ex://https://igx.4sqi.net/img/general/300x500/5163668_xXFcZo7sU8aa1ZMhiQ2kIP7NllD48m7qsSwr1mJnFj4.jpg
+		
+		if (id == null){ return null; }
+		console.log(id);
+		
+		var foursquareUrl = 'https://api.foursquare.com/v2/venues/' + id + '/photos?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219';
+		console.log(foursquareUrl);
+		
+		$.getJSON(foursquareUrl, function(data){			
+			var photo = data.response.photos;
+			if (photo.count > 0){			
+				self.locationList()[index].photo_info( photo.items.prefix + size + photo.items.suffix);
+				console.log(self.locationList()[index].photo_info());
+			}
+		}).fail(function(){
+			alert("Cannot load location image.");
+		});
+	};
+	
     this.setLocationList = function(locations){
-        var i = 0
+        //var index = 0
         locations.forEach(function(locationItem){
 			//console.log('setLocationList photo_info: ' + locationItem.photo_info);
             self.locationList.push(new Location(locationItem));
+			//self.getPhoto(index);
+			//index++;
         });
     }; 
     
@@ -138,34 +158,12 @@ function ViewModel(){
         }
     };
 	
-
-	this.getPhoto = function(id){
-		
-		var size = '100x100';
-		// https://api.foursquare.com/v2/venues/4c61ebbce1349521fbe9aaf0/photos?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219
-		// response’s prefix + size + suffix. Ex://https://igx.4sqi.net/img/general/300x500/5163668_xXFcZo7sU8aa1ZMhiQ2kIP7NllD48m7qsSwr1mJnFj4.jpg
-		
-		if (id == null){ return null; }
-		
-		var foursquareUrl = 'https://api.foursquare.com/v2/venues/' + id + '/photos?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219';
-		
-		$.getJSON(foursquareUrl, function(data){			
-			
-			if (data.response.photos.count > 0){			
-				return data.response.photos.items.prefix + size + data.response.photos.items.suffix;
-			}
-			else{
-				return null;
-			}			
-		});
-		
-		return null;
-	};
      	
 	this.foursquareList = function(category){
 		var coords = mapView.mapLocation;        
         var newLocations = [];
-		var radius = 15000;
+		var radius = 8500;
+		var limit = 15;
 		console.log('foursquareList');
 		
 		//console.log('foursquareList category' + category);
@@ -173,7 +171,7 @@ function ViewModel(){
 		// https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=35.9940329,-78.898619&categoryId=4bf58dd8d48988d196941735&limit=19
 		
 		
-		var foursquareUrl = 'https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=' + coords.lat + ',' + coords.lng + '&categoryId=' + category +'&radius=' + radius + '&limit=19';
+		var foursquareUrl = 'https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=' + coords.lat + ',' + coords.lng + '&categoryId=' + category +'&radius=' + radius + '&limit=' + limit;
 				
 		console.log('foursquareList url: ' + foursquareUrl);
 		
@@ -208,6 +206,8 @@ function ViewModel(){
         
 			self.setLocationList(newLocations);
 			mapView.createMarkers();
+		}).fail(function(){
+			alert("Cannot load locatiion List");
 		});
 	};
 }
@@ -225,18 +225,26 @@ function MapView(){
 
     // Initialize the map
     this.initMap = function() {
-     
-        // Constructor creates a new map - Centered at Durham, NC.
-        self.map = new google.maps.Map(document.getElementById('map'), {
-          center: self.mapLocation,
-          zoom: 13,
-          //styles: styles,
-          mapTypeControl: false
-        });
-        
-        this.createMarkers();
+		try{
+			// Constructor creates a new map - Centered at Durham, NC.
+			self.map = new google.maps.Map(document.getElementById('map'), {
+			  center: self.mapLocation,
+			  zoom: 13,
+			  //styles: styles,
+			  mapTypeControl: false
+			});
+			
+			this.createMarkers();
+		}
+		catch(e){
+			alert("Google Map failed to load.");
+		}
     };
-
+/*
+	$(document.getElementById('map')).onerror(function(){
+		alert("Google Map failed to load.");
+	});
+*/
     this.createMarkers = function() {    
         // Udacity Projectcode3windowshoppingpart1
         // The following group uses the locationList array to create an array of markers on initialize.
@@ -250,14 +258,16 @@ function MapView(){
             // Get the position from the location array.
             var position = viewModel.locationList()[i].position;
             var title = viewModel.locationList()[i].title();
-            var foursquareId = viewModel.locationList()[i].foursquare_id();
+			var address = viewModel.locationList()[i].address();
+            var photo_info = viewModel.locationList()[i].photo_info();
             // Create a marker per location, and put into markers array.
             var marker = new google.maps.Marker({
                 map: self.map,
                 position: position,
                 title: title,
+				address: address,
                 animation: google.maps.Animation.DROP,
-				foursquareId: foursquareId,
+				photo_info: photo_info,
                 id: self.markerId
             });
             viewModel.setLocationMarkerID(i,self.markerId);
@@ -289,14 +299,31 @@ function MapView(){
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
             infowindow.marker = marker;
-            infowindow.setContent('<div>' + marker.title + '</div>');
+			console.log(marker.photo_info);
+			if(marker.photo_info == null){
+				infowindow.setContent('<div>' + marker.title + '</div><div>' + marker.address + '</div>');
+			}
+			else{
+				infowindow.setContent('<div>' + marker.title + '</div>' + '<img src="' + marker.photo_info + '">');
+			}
             infowindow.open(map, marker);
             // Make sure the marker property is cleared if the infowindow is closed.
             infowindow.addListener('closeclick',function(){
                 infowindow.setMarker = null;
+			self.toggleBounce(marker);
             });
+			self.toggleBounce(marker);
         }
     };
+	
+	// https://developers.google.com/maps/documentation/javascript/markers
+	this.toggleBounce = function (marker) {
+		if (marker.getAnimation() !== null) {
+			marker.setAnimation(null);
+		} else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+	};
 
     this.getLocations = function(category){
         console.log("getLocation: " + category);

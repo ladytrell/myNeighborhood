@@ -2,9 +2,8 @@
 
 Neighborhood App is a web application for jewerly crafts items.
 
-  - Items grouped into catagories
-  - Item modification authentication protected
-  - Third party login authentication
+  - Displays area locations for a default list of 5
+  - Filter area list using preset categories
 
 
 ### How to Execute the App
@@ -21,8 +20,8 @@ And of course Neighborhood App itself is open source with a [public repository]
  on GitHub.
 
 ### Installation
-clone or download to /vagrant/Neighborhood
-https://github.com/ladytrell/Neighborhood_project
+
+https://github.com/ladytrell/myNeighborhood
 
 
 Verify the deployment by navigating to your server address in your preferred browser.
