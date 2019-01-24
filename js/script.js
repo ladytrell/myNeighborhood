@@ -223,20 +223,15 @@ function MapView(){
 
     // Initialize the map
     this.initMap = function() {
-		try{
-			// Constructor creates a new map - Centered at Durham, NC.
-			self.map = new google.maps.Map(document.getElementById('map'), {
-			  center: self.mapLocation,
-			  zoom: 13,
-			  //styles: styles,
-			  mapTypeControl: false
-			});
-			
-			this.createMarkers();
-		}
-		catch(e){
-			alert("Google Map failed to load.");
-		}
+		// Constructor creates a new map - Centered at Durham, NC.
+		self.map = new google.maps.Map(document.getElementById('map'), {
+		  center: self.mapLocation,
+		  zoom: 13,
+		  //styles: styles,
+		  mapTypeControl: false
+		});
+		
+		this.createMarkers();
     };
 
 	this.googleError = function(){
