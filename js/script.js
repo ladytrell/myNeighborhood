@@ -163,12 +163,12 @@ function ViewModel(){
 		var coords = mapView.mapLocation;        
         var newLocations = [];
 		var radius = 8500;
-		var limit = 15;
+		var limit = 10;
 		console.log('foursquareList');
 		
 		//console.log('foursquareList category' + category);
 		// Foursquare AJAX request
-		// https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=35.9940329,-78.898619&categoryId=4bf58dd8d48988d196941735&limit=19
+		// https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=35.9940329,-78.898619&categoryId=4bf58dd8d48988d196941735&radius=8500&limit=19
 		
 		
 		var foursquareUrl = 'https://api.foursquare.com/v2/venues/search?client_id=ERFXHUGKVY1MQDYO4DOZZQPWPYVOVCD5B3UHAI20WFZ0OYTM&client_secret=WG1ZBINAIDSRRJOQ5GF11UD3V1R2SML2IAPKLC0DFFLU4OG2&v=20181219&ll=' + coords.lat + ',' + coords.lng + '&categoryId=' + category +'&radius=' + radius + '&limit=' + limit;
@@ -191,9 +191,7 @@ function ViewModel(){
                     markerId: null
                 }                 
                 if(fsList[i].name){ place.title = fsList[i].name;}
-                if(fsList[i].formatted_address){ place.address = fsList[i].formattedAddress;}
-                //else if(fsList[i].vicinity) { place.address = fsList[i].vicinity;}
-                else{;}                
+				if(fsList[i].location.address){ place.address = fsList[i].location.address;} 
                 if(fsList[i].location){ place.position = fsList[i].location;}
                 console.log("place position: " + place.position);  
 				place.foursquare_id = fsList[i].id;
@@ -240,16 +238,21 @@ function MapView(){
 			alert("Google Map failed to load.");
 		}
     };
-/*
-	$(document.getElementById('map')).onerror(function(){
-		alert("Google Map failed to load.");
-	});
-*/
+
+	this.googleError = function(){
+		//Figure out how to write to the map div
+		var mapDev = document.getElementById('map');
+		var text = document.createTextNode("Google maps failed to load");
+		
+		mapDev.appendChild(text);
+		console.log("<p>Google maps failed to load</p>");
+	}
+	
+	
     this.createMarkers = function() {    
         // Udacity Projectcode3windowshoppingpart1
         // The following group uses the locationList array to create an array of markers on initialize.
         
-        //var largeInfowindow = new google.maps.InfoWindow();
         self.largeInfowindow = new google.maps.InfoWindow();
             
         console.log("createMarkers viewModel.locationList: " + viewModel.locationList().length);

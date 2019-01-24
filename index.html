@@ -20,7 +20,7 @@
         <div id="map"></div>
     </div>   
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCy3A3m63BBMJ6pD0aAhvnPo35d-8g6IFQ&v=3&callback=mapView.initMap"> </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCy3A3m63BBMJ6pD0aAhvnPo35d-8g6IFQ&v=3&callback=mapView.initMap" onerror="mapView.googleError()"> </script>
     <script src="js/libs/knockout-3.4.2.js"></script>
     <script src="js/libs/jquery-3.3.1.min.js"></script>
     <script src="js/script.js"></script>
