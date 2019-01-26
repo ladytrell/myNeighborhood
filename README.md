@@ -1,6 +1,6 @@
 # Neighborhood App
 
-Neighborhood App is a web application for jewerly crafts items.
+Neighborhood App is a web application displaying local places of interest.
 
   - Displays area locations for a default list of 5
   - Filter area list using preset categories
