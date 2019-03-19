@@ -1,6 +1,6 @@
 # Neighborhood App
 
-Neighborhood App is a web application displaying local places of interest.
+Neighborhood App is a web application for displaying local places of interest.
 
   - Displays area locations for a default list of 5
   - Filter area list using preset categories
@@ -15,18 +15,14 @@ Neighborhood App uses a number of open source projects to work properly:
 3.  Google Maps
 4.  Foursquare
 
-
-And of course Neighborhood App itself is open source with a [public repository]
+> And of course Neighborhood App itself is open source with a [public repository]
  on GitHub.
 
 ### Installation
 
-https://github.com/ladytrell/myNeighborhood
-
-
-Verify the deployment by navigating to your server address in your preferred browser.
-
-Open index.html in a webrowser
+1. Download or clone the application files from https://github.com/ladytrell/myNeighborhood
+2. Verify the deployment by navigating to your server address in your preferred browser.
+3. Open index.html in a webrowser
 
 
 ### Todos
